@@ -2,6 +2,7 @@ package com.freightos.marketplace;
 
 import com.freightos.marketplace.modules.identity.User;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -11,9 +12,11 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationRepository notificationRepository;
+    private final ApplicationEventPublisher publisher;
 
-    public NotificationController(NotificationRepository notificationRepository) {
+    public NotificationController(NotificationRepository notificationRepository, ApplicationEventPublisher publisher) {
         this.notificationRepository = notificationRepository;
+        this.publisher = publisher;
     }
 
     @GetMapping
@@ -33,9 +36,16 @@ public class NotificationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/send")
+    public ResponseEntity<Void> sendNotification(@RequestBody NotificationEvent request) {
+        publisher.publishEvent(new NotificationEvent(request.getUserId(), request.getTitle(), request.getMessage(), request.getType()));
+        return ResponseEntity.accepted().build();
+    }
+
     private void seedMockDataIfEmpty(String userId) {
         if (notificationRepository.count() == 0) {
-            Notification n1 = new Notification();
+            // Seeding logic remains
+             Notification n1 = new Notification();
             n1.setUserId(userId);
             n1.setTitle("Shipment Booked");
             n1.setMessage("Your shipment TRK-123456 has been successfully booked.");
