@@ -2,9 +2,7 @@ package com.freightos.marketplace.modules.catalog;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.List;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +19,7 @@ public class TariffController {
 
     // Listar tarifas – cualquier usuario autenticado (shipper, carrier, admin)
     @GetMapping
+    @Cacheable("tariffs")
     public List<TariffDto> listTariffs() {
         return tariffRepository.findAll()
                 .stream()
@@ -34,39 +33,30 @@ public class TariffController {
             @RequestParam(required = false) String origin,
             @RequestParam(required = false) String destination) {
 
-        List<Tariff> tariffs = tariffRepository.findAll();
+        List<Tariff> tariffs = tariffRepository.findAll(); // Naive implementation, should use repository method
 
-        // Filter by origin if provided
-        if (origin != null && !origin.isEmpty()) {
-            tariffs = tariffs.stream()
-                    .filter(t -> t.getOriginPort().equalsIgnoreCase(origin))
-                    .toList();
-        }
-
-        // Filter by destination if provided
-        if (destination != null && !destination.isEmpty()) {
-            tariffs = tariffs.stream()
-                    .filter(t -> t.getDestinationPort().equalsIgnoreCase(destination))
-                    .toList();
-        }
-
-        return tariffs.stream().map(this::toDto).toList();
+        return tariffs.stream()
+                .filter(t -> (origin == null || t.getOriginPort().equalsIgnoreCase(origin)) &&
+                        (destination == null || t.getDestinationPort().equalsIgnoreCase(destination)))
+                .map(this::toDto)
+                .toList();
     }
 
-    // Crear tarifa – sólo carrier o admin
+    // Crear tarifa – solo Carriers y Admin
     @PostMapping
     @PreAuthorize("hasAnyRole('carrier','admin')")
-    public TariffDto createTariff(@RequestBody CreateOrUpdateTariffRequest request) {
-        Tariff tariff = new Tariff(
-                request.mode,
-                request.originPort,
-                request.destinationPort,
-                request.price,
-                request.currency,
-                LocalDate.parse(request.validFrom),
-                LocalDate.parse(request.validTo),
-                request.transitTimeDays,
-                request.carrierName);
+    public TariffDto createTariff(@RequestBody TariffDto request) {
+        Tariff tariff = new Tariff();
+        tariff.setMode(request.mode);
+        tariff.setOriginPort(request.originPort);
+        tariff.setDestinationPort(request.destinationPort);
+        tariff.setPrice(request.price);
+        tariff.setCurrency(request.currency);
+        if (request.validFrom != null) tariff.setValidFrom(LocalDate.parse(request.validFrom));
+        if (request.validTo != null) tariff.setValidTo(LocalDate.parse(request.validTo));
+        tariff.setTransitTimeDays(request.transitTimeDays);
+        tariff.setCarrierName(request.carrierName);
+
         Tariff saved = tariffRepository.save(tariff);
         return toDto(saved);
     }
@@ -74,8 +64,7 @@ public class TariffController {
     // Actualizar tarifa
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('carrier','admin')")
-    public TariffDto updateTariff(@PathVariable Long id,
-            @RequestBody CreateOrUpdateTariffRequest request) {
+    public TariffDto updateTariff(@PathVariable Long id, @RequestBody TariffDto request) {
         Tariff tariff = tariffRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tariff not found"));
 
