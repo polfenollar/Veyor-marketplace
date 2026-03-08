@@ -1,0 +1,10 @@
+{
+    "agentId": "product_manager",
+    "status": "completed",
+    "progress": 100,
+    "startTime": "2026-02-13T19:30:00Z",
+    "endTime": "2026-02-13T19:56:00Z",
+    "currentTask": null,
+    "blockers": [],
+    "lastUpdate": "2026-02-13T19:56:00Z"
+}

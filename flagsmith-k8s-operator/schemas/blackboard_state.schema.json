@@ -1,0 +1,210 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "workflowId",
+        "currentPhase",
+        "status",
+        "phases"
+    ],
+    "properties": {
+        "workflowId": {
+            "type": "string",
+            "description": "Unique identifier for this workflow execution"
+        },
+        "currentPhase": {
+            "type": "string",
+            "enum": [
+                "research",
+                "requirements",
+                "architecture",
+                "development",
+                "qa",
+                "delivery"
+            ],
+            "description": "Current active phase"
+        },
+        "currentAgent": {
+            "type": "string",
+            "description": "Currently active agent"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "not_started",
+                "in_progress",
+                "blocked",
+                "completed"
+            ],
+            "description": "Overall workflow status"
+        },
+        "startTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "lastUpdateTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "phases": {
+            "type": "object",
+            "properties": {
+                "research": {
+                    "$ref": "#/definitions/phaseStatus"
+                },
+                "requirements": {
+                    "$ref": "#/definitions/phaseStatus"
+                },
+                "architecture": {
+                    "$ref": "#/definitions/phaseStatus"
+                },
+                "development": {
+                    "$ref": "#/definitions/phaseStatus"
+                },
+                "qa": {
+                    "$ref": "#/definitions/phaseStatus"
+                },
+                "delivery": {
+                    "$ref": "#/definitions/phaseStatus"
+                }
+            }
+        },
+        "validationGates": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/validationGate"
+            }
+        },
+        "blockers": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/blocker"
+            }
+        }
+    },
+    "definitions": {
+        "phaseStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "not_started",
+                        "in_progress",
+                        "blocked",
+                        "completed"
+                    ]
+                },
+                "progress": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "agent": {
+                    "type": "string"
+                },
+                "deliverables": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "pending",
+                                    "in_progress",
+                                    "completed"
+                                ]
+                            },
+                            "path": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "validationGate": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "fromAgent": {
+                    "type": "string"
+                },
+                "toAgent": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "pending",
+                        "passed",
+                        "failed"
+                    ]
+                },
+                "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "reportPath": {
+                    "type": "string"
+                }
+            }
+        },
+        "blocker": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "agent": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "severity": {
+                    "type": "string",
+                    "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                    ]
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "resolvedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "open",
+                        "in_progress",
+                        "resolved"
+                    ]
+                }
+            }
+        }
+    }
+}

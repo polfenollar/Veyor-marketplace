@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package quoting;
+
+option go_package = "github.com/veyor/quoting-service/pkg/pb";
+option java_package = "com.veyor.marketplace.modules.quoting.grpc";
+option java_multiple_files = true;
+
+service QuotingService {
+  rpc GetQuotes (QuoteRequest) returns (QuoteResponse);
+}
+
+message QuoteRequest {
+  string transaction_id = 1;
+  string origin_locode = 2;
+  string destination_locode = 3;
+  string ready_date = 4;        // YYYY-MM-DD
+  CargoDetails cargo = 5;
+  string incoterm = 6;          // FOB, CIF, EXW
+  string currency_requested = 7;// EUR, USD
+}
+
+message CargoDetails {
+  string equipment_type = 1;    // 20FT, 40FT, 40HC, 40RF, LCL
+  double total_weight_kg = 2;
+  double total_volume_cbm = 3;
+  string commodity_type = 4;    // GENERAL, HAZMAT, PERISHABLE
+}
+
+message QuoteResponse {
+  repeated Quote quotes = 1;
+}
+
+message Quote {
+  string quote_id = 1;
+  string carrier_name = 2;
+  double total_price = 3;
+  string currency = 4;
+  int32 transit_time_days = 5;
+  string valid_until = 6;
+  CostBreakdown breakdown = 7;
+}
+
+message CostBreakdown {
+  double base_freight = 1;
+  repeated Surcharge surcharges = 2;
+  double fixed_fees = 3;
+}
+
+message Surcharge {
+  string code = 1;
+  double amount = 2;
+}

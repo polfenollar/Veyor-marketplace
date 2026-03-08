@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 80" fill="none">
+
+  <!-- ===== V + Arrow Icon (fits in 0-68, 0-80) ===== -->
+
+  <!-- Left outer arm of V -->
+  <path d="M22,6 L6,58" stroke="white" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Inner right arm of V (going down) -->
+  <path d="M44,6 L32,38" stroke="white" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Bottom curve connecting left arm, sweeping right and up -->
+  <path d="M6,58 Q3,72 14,73 L30,73 Q41,73 45,62 L60,30"
+        stroke="white" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Blue arrow shaft -->
+  <path d="M58,28 L74,8" stroke="#2563eb" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Blue arrowhead -->
+  <polygon points="80,2 64,14 70,28" fill="#2563eb"/>
+
+  <!-- ===== VEYOR text ===== -->
+  <text x="92" y="52"
+        fill="white"
+        font-family="'Arial Black', 'Impact', Arial, sans-serif"
+        font-weight="900"
+        font-size="46"
+        letter-spacing="2">VEYOR</text>
+
+  <!-- ===== Subtitle ===== -->
+  <text x="94" y="67"
+        fill="white"
+        font-family="Arial, sans-serif"
+        font-weight="400"
+        font-size="9"
+        letter-spacing="3">FREIGHT SAAS MARKETPLACE</text>
+
+</svg>

@@ -1,0 +1,308 @@
+{
+    "$schema": "../../../schemas/agent_outputs.md#/2-product-manager-output-schema",
+    "agentId": "product_manager",
+    "phase": "requirements",
+    "timestamp": "2026-02-13T19:56:00Z",
+    "requirements": {
+        "functional": [
+            {
+                "id": "FR-INST-001",
+                "category": "Installation Management",
+                "description": "Operator shall deploy complete Flagsmith instance via Helm chart",
+                "priority": "must_have",
+                "traceabilityTo": [
+                    "research:helm_integration",
+                    "research:flagsmith_deployment"
+                ]
+            },
+            {
+                "id": "FR-INST-002",
+                "category": "Installation Management",
+                "description": "Operator shall manage PostgreSQL database lifecycle",
+                "priority": "must_have",
+                "traceabilityTo": [
+                    "research:flagsmith_components"
+                ]
+            },
+            {
+                "id": "FR-PROJ-001",
+                "category": "Configuration Management",
+                "description": "Operator shall create and sync Flagsmith projects via API",
+                "priority": "must_have",
+                "traceabilityTo": [
+                    "research:management_api"
+                ]
+            },
+            {
+                "id": "FR-ENV-001",
+                "category": "Configuration Management",
+                "description": "Operator shall manage environments within projects",
+                "priority": "must_have",
+                "traceabilityTo": [
+                    "research:management_api"
+                ]
+            },
+            {
+                "id": "FR-FLAG-001",
+                "category": "Feature Flag Management",
+                "description": "Operator shall create and update feature flags",
+                "priority": "must_have",
+                "traceabilityTo": [
+                    "research:management_api"
+                ]
+            },
+            {
+                "id": "FR-RBAC-001",
+                "category": "RBAC",
+                "description": "Operator shall enforce Kubernetes RBAC for resource access",
+                "priority": "must_have",
+                "traceabilityTo": [
+                    "research:kubernetes_rbac"
+                ]
+            },
+            {
+                "id": "FR-APPR-001",
+                "category": "Governance",
+                "description": "Operator shall support approval workflows for critical changes",
+                "priority": "should_have",
+                "traceabilityTo": [
+                    "research:governance_patterns"
+                ]
+            },
+            {
+                "id": "FR-POLY-001",
+                "category": "Policy Enforcement",
+                "description": "Operator shall integrate with Kyverno for policy enforcement",
+                "priority": "should_have",
+                "traceabilityTo": [
+                    "research:kyverno_integration"
+                ]
+            }
+        ],
+        "acceptance": [
+            {
+                "requirementId": "FR-INST-001",
+                "criteria": [
+                    "FlagsmithInstance CRD creates all components (API, Frontend, DB, Redis)",
+                    "Helm chart values correctly mapped from CRD spec",
+                    "All components reach Ready state",
+                    "Status reflects deployment health"
+                ]
+            },
+            {
+                "requirementId": "FR-PROJ-001",
+                "criteria": [
+                    "FlagsmithProject CRD creates project in Flagsmith API",
+                    "Project ID stored in status",
+                    "Updates to spec sync to Flagsmith",
+                    "Deletion removes project from Flagsmith"
+                ]
+            },
+            {
+                "requirementId": "FR-RBAC-001",
+                "criteria": [
+                    "Users with Viewer role can read resources",
+                    "Users with Developer role can create/update resources",
+                    "Users with Admin role have full access",
+                    "Unauthorized users are denied"
+                ]
+            }
+        ]
+    },
+    "crds": [
+        {
+            "name": "flagsmithinstances.flagsmith.k8s.io",
+            "apiVersion": "flagsmith.k8s.io/v1alpha1",
+            "kind": "FlagsmithInstance",
+            "scope": "Namespaced",
+            "spec": {
+                "version": "string",
+                "database": "object",
+                "redis": "object",
+                "api": "object",
+                "frontend": "object",
+                "ingress": "object"
+            },
+            "status": {
+                "phase": "string",
+                "conditions": "array",
+                "apiEndpoint": "string",
+                "frontendEndpoint": "string"
+            }
+        },
+        {
+            "name": "flagsmithprojects.flagsmith.k8s.io",
+            "apiVersion": "flagsmith.k8s.io/v1alpha1",
+            "kind": "FlagsmithProject",
+            "scope": "Namespaced",
+            "spec": {
+                "instanceRef": "object",
+                "name": "string",
+                "description": "string"
+            },
+            "status": {
+                "projectId": "string",
+                "phase": "string",
+                "conditions": "array"
+            }
+        },
+        {
+            "name": "flagsmithenvironments.flagsmith.k8s.io",
+            "apiVersion": "flagsmith.k8s.io/v1alpha1",
+            "kind": "FlagsmithEnvironment",
+            "scope": "Namespaced",
+            "spec": {
+                "projectRef": "object",
+                "name": "string",
+                "description": "string"
+            },
+            "status": {
+                "environmentId": "string",
+                "apiKey": "string",
+                "phase": "string"
+            }
+        },
+        {
+            "name": "flagsmithfeatureflags.flagsmith.k8s.io",
+            "apiVersion": "flagsmith.k8s.io/v1alpha1",
+            "kind": "FlagsmithFeatureFlag",
+            "scope": "Namespaced",
+            "spec": {
+                "environmentRef": "object",
+                "name": "string",
+                "enabled": "boolean",
+                "value": "string"
+            },
+            "status": {
+                "featureId": "string",
+                "phase": "string"
+            }
+        },
+        {
+            "name": "flagsmithsegments.flagsmith.k8s.io",
+            "apiVersion": "flagsmith.k8s.io/v1alpha1",
+            "kind": "FlagsmithSegment",
+            "scope": "Namespaced",
+            "spec": {
+                "projectRef": "object",
+                "name": "string",
+                "rules": "array"
+            },
+            "status": {
+                "segmentId": "string",
+                "phase": "string"
+            }
+        },
+        {
+            "name": "flagsmithapprovals.flagsmith.k8s.io",
+            "apiVersion": "flagsmith.k8s.io/v1alpha1",
+            "kind": "FlagsmithApproval",
+            "scope": "Namespaced",
+            "spec": {
+                "resourceRef": "object",
+                "approvers": "array",
+                "requiredApprovals": "integer"
+            },
+            "status": {
+                "approvalStatus": "string",
+                "approvals": "array"
+            }
+        }
+    ],
+    "useCases": [
+        {
+            "id": "UC-INST-001",
+            "name": "Deploy New Flagsmith Instance",
+            "actor": "Platform Administrator",
+            "goal": "Deploy a complete Flagsmith instance in Kubernetes",
+            "preconditions": [
+                "Operator installed",
+                "Namespace exists"
+            ],
+            "flow": [
+                "Create FlagsmithInstance CR with configuration",
+                "Operator validates specification",
+                "Operator deploys PostgreSQL",
+                "Operator deploys Redis",
+                "Operator deploys API server",
+                "Operator deploys Frontend",
+                "Operator configures Ingress",
+                "Status updated to Ready"
+            ],
+            "postconditions": [
+                "All components running",
+                "Endpoints accessible"
+            ],
+            "relatedRequirements": [
+                "FR-INST-001",
+                "FR-INST-002"
+            ]
+        },
+        {
+            "id": "UC-PROJ-001",
+            "name": "Create Feature Flag Project",
+            "actor": "Developer",
+            "goal": "Create a new project for organizing feature flags",
+            "preconditions": [
+                "FlagsmithInstance exists",
+                "User has Developer role"
+            ],
+            "flow": [
+                "Create FlagsmithProject CR",
+                "Operator validates RBAC permissions",
+                "Operator calls Flagsmith API to create project",
+                "Operator stores project ID in status",
+                "Status updated to Ready"
+            ],
+            "postconditions": [
+                "Project exists in Flagsmith",
+                "Project ID in status"
+            ],
+            "relatedRequirements": [
+                "FR-PROJ-001",
+                "FR-RBAC-001"
+            ]
+        },
+        {
+            "id": "UC-APPR-001",
+            "name": "Request Approval for Production Change",
+            "actor": "Developer",
+            "goal": "Request approval before modifying production feature flag",
+            "preconditions": [
+                "Approval policy enabled",
+                "Production environment exists"
+            ],
+            "flow": [
+                "Developer creates/updates FlagsmithFeatureFlag for production",
+                "Admission webhook detects production environment",
+                "Webhook creates FlagsmithApproval CR",
+                "Webhook blocks feature flag creation",
+                "Approvers review and approve",
+                "Operator applies feature flag change",
+                "Notification sent to developer"
+            ],
+            "postconditions": [
+                "Change approved and applied",
+                "Audit trail created"
+            ],
+            "relatedRequirements": [
+                "FR-APPR-001",
+                "FR-POLY-001"
+            ]
+        }
+    ],
+    "deliverables": [
+        {
+            "name": "functional_requirements.md",
+            "path": "agents/product/functional_requirements.md",
+            "status": "completed",
+            "checksum": "sha256:pqr678..."
+        },
+        {
+            "name": "use_cases.md",
+            "path": "agents/product/use_cases.md",
+            "status": "completed",
+            "checksum": "sha256:stu901..."
+        }
+    ]
+}

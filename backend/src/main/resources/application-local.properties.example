@@ -1,0 +1,21 @@
+# Copy to application-local.properties and set your local credentials.
+# application-local.properties is gitignored and must not be committed.
+# These values are for local development only; use env vars or secrets in production.
+
+server.port=8080
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/marketplace
+spring.datasource.username=veyor
+spring.datasource.password=CHANGE_ME
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=true
+
+spring.redis.host=localhost
+spring.redis.port=6379
+
+spring.kafka.bootstrap-servers=localhost:9092
+spring.kafka.consumer.auto-offset-reset=earliest
+spring.kafka.consumer.group-id=veyor-local
+
+spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081/realms/veyor-local
