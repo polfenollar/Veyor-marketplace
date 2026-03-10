@@ -2,7 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-VEYOR is a full-stack freight marketplace platform that connects shippers with carriers through a real-time quoting, booking, and shipment management system. It demonstrates a production-grade hybrid microservices architecture combining a Java Spring Boot monolith, Go microservices, a Next.js frontend, an AI support agent, and a full observability stack.
+VEYOR is a full-stack freight marketplace platform that connects shippers with carriers through a real-time quoting, booking, and shipment management system. It demonstrates a production-grade hybrid microservices architecture combining a Java Spring Boot monolith, Go microservices, a Next.js frontend, an AI support agent, and a full observability stack. 
+
+This is a learning exercise and not a full fledged marketplace, even though it´s production grade. The purpose is to experiment with the latest innovations in infrastructure, multi agent orchestration and technologies.
 
 ---
 
